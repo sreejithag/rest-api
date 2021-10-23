@@ -20,3 +20,7 @@ export function checkOverlap(intervals,newInterval){
     return false;
 }
 
+export function verifyDay(day){
+    
+}
+
