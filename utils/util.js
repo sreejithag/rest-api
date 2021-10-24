@@ -87,12 +87,38 @@ exports.getDayScehdule = (schedules,day)=>{
     return;
 }
 
-exports.updateDaySchedule = (schedules,day,newSlots)=>{
+exports.updateSlot = (schedules,day,newSlots)=>{
     for(let schedule of schedules){
         if(schedule.day===day){
             schedule.slots = newSlots
             return true;
         }
     }
+    return false;
+}
+
+exports.findAndUpdateSlot = (slots,current,update)=>{
+    let low = 0;
+    let high = slots.length-1;
+
+    while(low<=high){
+        const mid = low + parseInt((high-low)/2);
+        if(slots[mid][0]===current[0]){
+
+            slots[mid][0] = update[0];
+            slots[mid][1] = update[1];
+
+            slots.sort((a,b)=>a[0]-b[0]);
+
+            return true;
+
+        }else if(slots[mid][0]>current[0]){
+            high = mid-1;
+        }
+        else{
+            low = mid+1;
+        }
+    }
+
     return false;
 }
