@@ -131,7 +131,7 @@ exports.findAndDeleteSlot = (slots,target)=>{
         const mid = low + parseInt((high-low)/2);
         if(slots[mid][0]===target[0]){
 
-            slots = slots.splice(mid,1);
+            slots.splice(mid,1);
 
             return true;
 
