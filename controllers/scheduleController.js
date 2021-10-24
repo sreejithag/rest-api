@@ -98,7 +98,7 @@ exports.addSchedule = async (req,res,next)=>{
                 const saved = await currentPrefernce.save();
 
                 if(saved) 
-                    return res.status(200).send();
+                    return res.status(200).send('Schedule added');
                 else
                     return res.status(500).send('Internal server error');
 
@@ -229,7 +229,7 @@ exports.updateSchedule = async (req,res,next)=>{
        
        //not updated as current slot not found
        if(!slotUpdated){
-            return res.status(404).send('Slot not found');
+            return res.status(404).send('Schedule not found');
        }
 
        const updated = util.updateSlot(currentPrefernce.schedule,day,currentSlots);
@@ -243,6 +243,87 @@ exports.updateSchedule = async (req,res,next)=>{
 
        if(saved) 
            return res.status(200).send('Update success');
+       else
+           return res.status(500).send('Internal server error');
+       
+
+    }catch(err){
+        next(err);
+    }
+}
+
+
+exports.deleteSchedule = async (req,res,next)=>{
+    try{
+        const userid = req.user;
+        const day = req.params.day;
+
+        let start_time = req.body.start_time;
+        let end_time = req.body.end_time;
+
+        
+
+
+        //verifiy if got all data
+        if(!day || !end_time || !days.includes(day) || !start_time){
+            return  res.status(400).send('Bad request provide correct input');
+        }
+
+
+        const currentPrefernce = await Prefrences.findOne({
+            user : userid,
+            schedule:{
+                $elemMatch:{day:day}
+            }
+        });
+
+        if(!currentPrefernce){
+            return res.status(404).send('Schedule for the day not found');
+        }
+
+        //parse the time to array
+        start_time = util.parseTime(start_time);
+        end_time = util.parseTime(end_time);
+
+        
+        
+       //convert times to minute and create slot interval
+       const start_time_minutes = util.timeToMinutes(start_time);
+       const end_time_minutes = util.timeToMinutes(end_time);
+       const slot = [start_time_minutes,end_time_minutes];
+
+       
+
+       //fetch the schedule for the day 
+       const daySchedule = util.getDayScehdule(currentPrefernce.schedule,day);
+
+       //if daySchedule is undefined for some reason 
+       if(!daySchedule){
+           return res.status(500).send('Internal server error');
+       }
+
+       //fetch the current slots
+       let currentSlots = daySchedule.slots;
+
+       //delete the slot and get new slots in currentSlots
+       const slotUpdated = util.findAndDeleteSlot(currentSlots,slot);
+       
+       //not updated as current slot not found
+       if(!slotUpdated){
+            return res.status(404).send('Schedule not found');
+       }
+
+       const updated = util.updateSlot(currentPrefernce.schedule,day,currentSlots);
+        
+       if(!updated){
+         return res.status(500).send('Internal server error');
+       }
+
+
+       const saved = await currentPrefernce.save();
+
+       if(saved) 
+           return res.status(200).send('Delete success');
        else
            return res.status(500).send('Internal server error');
        

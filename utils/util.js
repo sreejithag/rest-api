@@ -122,3 +122,26 @@ exports.findAndUpdateSlot = (slots,current,update)=>{
 
     return false;
 }
+
+exports.findAndDeleteSlot = (slots,target)=>{
+    let low = 0;
+    let high = slots.length-1;
+
+    while(low<=high){
+        const mid = low + parseInt((high-low)/2);
+        if(slots[mid][0]===target[0]){
+
+            slots = slots.splice(mid,1);
+
+            return true;
+
+        }else if(slots[mid][0]>target[0]){
+            high = mid-1;
+        }
+        else{
+            low = mid+1;
+        }
+    }
+
+    return false;
+}
