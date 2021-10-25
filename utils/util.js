@@ -145,3 +145,19 @@ exports.findAndDeleteSlot = (slots,target)=>{
 
     return false;
 }
+
+exports.findAndUpdateRestritedApp = (restrictedAppList,appName,weekDayLimit,weekEndLimit)=>{
+    
+    if(!restrictedAppList) return false;
+
+    for(let i=0; i<restrictedAppList.length;i++){
+        if(restrictedAppList[i].name === appName){
+            restrictedAppList[i].weekDayLimit = weekDayLimit;
+            restrictedAppList[i].weekEndLimit = weekEndLimit;
+
+            return true;
+        }
+    }
+
+    return false;
+}

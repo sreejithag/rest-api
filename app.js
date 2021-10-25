@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser');
 const scheduleRoute = require('./routes/schedulesRoute')
 const blockappRoute = require('./routes/blockappsRoute');
+const restrictAppRoute = require('./routes/restrictAppRoute');
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use(express.json());
 
 app.use('/api/v1/schedule',scheduleRoute);
 app.use('/api/v1/blockapp',blockappRoute);
+app.use('/api/v1/restrict',restrictAppRoute);
+
 
 app.get('/',(req,res)=>{
     res.send('Api works');
